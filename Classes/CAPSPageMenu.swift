@@ -31,8 +31,10 @@ class MenuItemView: UIView {
     
     var titleLabel : UILabel?
     var menuItemSeparator : UIView?
-    
-    func setUpMenuItemView(menuItemWidth: CGFloat, menuScrollViewHeight: CGFloat, indicatorHeight: CGFloat, separatorPercentageHeight: CGFloat, separatorWidth: CGFloat, separatorRoundEdges: Bool, menuItemSeparatorColor: UIColor) {
+    var unselectedMenuBackgroundColor : UIColor?
+    var selectedMenuBackgroundColor : UIColor?
+   
+    func setUpMenuItemView(menuItemWidth: CGFloat, menuScrollViewHeight: CGFloat, indicatorHeight: CGFloat, separatorPercentageHeight: CGFloat, separatorWidth: CGFloat, separatorRoundEdges: Bool, menuItemSeparatorColor: UIColor, unselectedMenuBackgroundColor: UIColor?, selectedMenuBackgroundColor: UIColor?) {
         titleLabel = UILabel(frame: CGRectMake(0.0, 0.0, menuItemWidth, menuScrollViewHeight - indicatorHeight))
         
         menuItemSeparator = UIView(frame: CGRectMake(menuItemWidth - (separatorWidth / 2), floor(menuScrollViewHeight * ((1.0 - separatorPercentageHeight) / 2.0)), separatorWidth, floor(menuScrollViewHeight * separatorPercentageHeight)))
@@ -43,9 +45,20 @@ class MenuItemView: UIView {
         }
         
         menuItemSeparator!.hidden = true
+        
+        self.unselectedMenuBackgroundColor = unselectedMenuBackgroundColor
+        
+        self.selectedMenuBackgroundColor = selectedMenuBackgroundColor
+        
+        setUnselectedBackgroundColor()
+        
         self.addSubview(menuItemSeparator!)
         
         self.addSubview(titleLabel!)
+    }
+    
+    func setUpMenuItemView(menuItemWidth: CGFloat, menuScrollViewHeight: CGFloat, indicatorHeight: CGFloat, separatorPercentageHeight: CGFloat, separatorWidth: CGFloat, separatorRoundEdges: Bool, menuItemSeparatorColor: UIColor) {
+        setUpMenuItemView(menuItemWidth, menuScrollViewHeight: menuScrollViewHeight, indicatorHeight: indicatorHeight, separatorPercentageHeight: separatorPercentageHeight, separatorWidth: separatorWidth, separatorRoundEdges: separatorRoundEdges, menuItemSeparatorColor: menuItemSeparatorColor, unselectedMenuBackgroundColor: nil, selectedMenuBackgroundColor: nil)
     }
     
     func setTitleText(text: NSString) {
@@ -53,6 +66,18 @@ class MenuItemView: UIView {
             titleLabel!.text = text as String
             titleLabel!.numberOfLines = 0
             titleLabel!.sizeToFit()
+        }
+    }
+    
+    func setSelectedBackgroundColor() {
+        if let color = selectedMenuBackgroundColor {
+            backgroundColor = color
+        }
+    }
+    
+    func setUnselectedBackgroundColor() {
+        if let color = unselectedMenuBackgroundColor {
+            backgroundColor = color
         }
     }
 }
@@ -70,6 +95,8 @@ public enum CAPSPageMenuOption {
     case MenuHeight(CGFloat)
     case SelectedMenuItemLabelColor(UIColor)
     case UnselectedMenuItemLabelColor(UIColor)
+    case SelectedMenuItemBackgroundColor(UIColor)
+    case UnselectedMenuItemBackgroundColor(UIColor)
     case UseMenuLikeSegmentedControl(Bool)
     case MenuItemSeparatorRoundEdges(Bool)
     case MenuItemFont(UIFont)
@@ -111,6 +138,8 @@ public class CAPSPageMenu: UIViewController, UIScrollViewDelegate, UIGestureReco
     public var selectionIndicatorColor : UIColor = UIColor.whiteColor()
     public var selectedMenuItemLabelColor : UIColor = UIColor.whiteColor()
     public var unselectedMenuItemLabelColor : UIColor = UIColor.lightGrayColor()
+    public var selectedMenuItemBackgroundColor : UIColor?
+    public var unselectedMenuItemBackgroundColor : UIColor?
     public var scrollMenuBackgroundColor : UIColor = UIColor.blackColor()
     public var viewBackgroundColor : UIColor = UIColor.whiteColor()
     public var bottomMenuHairlineColor : UIColor = UIColor.whiteColor()
@@ -199,6 +228,10 @@ public class CAPSPageMenu: UIViewController, UIScrollViewDelegate, UIGestureReco
                     selectedMenuItemLabelColor = value
                 case let .UnselectedMenuItemLabelColor(value):
                     unselectedMenuItemLabelColor = value
+                case let .SelectedMenuItemBackgroundColor(value):
+                    selectedMenuItemBackgroundColor = value
+                case let .UnselectedMenuItemBackgroundColor(value):
+                    unselectedMenuItemBackgroundColor = value
                 case let .UseMenuLikeSegmentedControl(value):
                     useMenuLikeSegmentedControl = value
                 case let .MenuItemSeparatorRoundEdges(value):
@@ -398,13 +431,13 @@ public class CAPSPageMenu: UIViewController, UIScrollViewDelegate, UIGestureReco
                 if menuItemMargin > 0 {
                     let marginSum = menuItemMargin * CGFloat(controllerArray.count + 1)
                     let menuItemWidth = (self.view.frame.width - marginSum) / CGFloat(controllerArray.count)
-                    menuItemView.setUpMenuItemView(menuItemWidth, menuScrollViewHeight: menuHeight, indicatorHeight: selectionIndicatorHeight, separatorPercentageHeight: menuItemSeparatorPercentageHeight, separatorWidth: menuItemSeparatorWidth, separatorRoundEdges: menuItemSeparatorRoundEdges, menuItemSeparatorColor: menuItemSeparatorColor)
+                    menuItemView.setUpMenuItemView(menuItemWidth, menuScrollViewHeight: menuHeight, indicatorHeight: selectionIndicatorHeight, separatorPercentageHeight: menuItemSeparatorPercentageHeight, separatorWidth: menuItemSeparatorWidth, separatorRoundEdges: menuItemSeparatorRoundEdges, menuItemSeparatorColor: menuItemSeparatorColor, unselectedMenuBackgroundColor: unselectedMenuItemBackgroundColor, selectedMenuBackgroundColor: selectedMenuItemBackgroundColor)
                 } else {
-                    menuItemView.setUpMenuItemView(CGFloat(self.view.frame.width) / CGFloat(controllerArray.count), menuScrollViewHeight: menuHeight, indicatorHeight: selectionIndicatorHeight, separatorPercentageHeight: menuItemSeparatorPercentageHeight, separatorWidth: menuItemSeparatorWidth, separatorRoundEdges: menuItemSeparatorRoundEdges, menuItemSeparatorColor: menuItemSeparatorColor)
+                    menuItemView.setUpMenuItemView(CGFloat(self.view.frame.width) / CGFloat(controllerArray.count), menuScrollViewHeight: menuHeight, indicatorHeight: selectionIndicatorHeight, separatorPercentageHeight: menuItemSeparatorPercentageHeight, separatorWidth: menuItemSeparatorWidth, separatorRoundEdges: menuItemSeparatorRoundEdges, menuItemSeparatorColor: menuItemSeparatorColor, unselectedMenuBackgroundColor: unselectedMenuItemBackgroundColor, selectedMenuBackgroundColor: selectedMenuItemBackgroundColor)
                 }
                 //**************************拡張ここまで*************************************
             } else {
-                menuItemView.setUpMenuItemView(menuItemWidth, menuScrollViewHeight: menuHeight, indicatorHeight: selectionIndicatorHeight, separatorPercentageHeight: menuItemSeparatorPercentageHeight, separatorWidth: menuItemSeparatorWidth, separatorRoundEdges: menuItemSeparatorRoundEdges, menuItemSeparatorColor: menuItemSeparatorColor)
+                menuItemView.setUpMenuItemView(menuItemWidth, menuScrollViewHeight: menuHeight, indicatorHeight: selectionIndicatorHeight, separatorPercentageHeight: menuItemSeparatorPercentageHeight, separatorWidth: menuItemSeparatorWidth, separatorRoundEdges: menuItemSeparatorRoundEdges, menuItemSeparatorColor: menuItemSeparatorColor, unselectedMenuBackgroundColor: unselectedMenuItemBackgroundColor, selectedMenuBackgroundColor: selectedMenuItemBackgroundColor)
             }
             
             // Configure menu item label font if font is set by user
@@ -448,6 +481,8 @@ public class CAPSPageMenu: UIViewController, UIScrollViewDelegate, UIGestureReco
             if menuItems[currentPageIndex].titleLabel != nil {
                 menuItems[currentPageIndex].titleLabel!.textColor = selectedMenuItemLabelColor
             }
+            // Set selected background color for menu view
+            menuItems[currentPageIndex].setSelectedBackgroundColor()
         }
         
         // Configure selection indicator view
@@ -738,6 +773,9 @@ public class CAPSPageMenu: UIViewController, UIScrollViewDelegate, UIGestureReco
                         self.menuItems[self.lastPageIndex].titleLabel!.textColor = self.unselectedMenuItemLabelColor
                         self.menuItems[self.currentPageIndex].titleLabel!.textColor = self.selectedMenuItemLabelColor
                     }
+                    
+                    self.menuItems[self.lastPageIndex].setUnselectedBackgroundColor()
+                    self.menuItems[self.currentPageIndex].setSelectedBackgroundColor()
                 }
             })
         }
