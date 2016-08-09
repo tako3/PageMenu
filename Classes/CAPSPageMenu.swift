@@ -24,6 +24,7 @@ import UIKit
     
     optional func willMoveToPage(controller: UIViewController, index: Int)
     optional func didMoveToPage(controller: UIViewController, index: Int)
+    optional func menuItemTapped(index: Int)
 }
 
 class MenuItemView: UIView {
@@ -867,6 +868,9 @@ public class CAPSPageMenu: UIViewController, UIScrollViewDelegate, UIGestureReco
                     // Add page from which tap is initiated so it can be removed after tap is done
                     pagesAddedDictionary[lastPageIndex] = lastPageIndex
                 }
+                
+                // Call menuItemTapped delegate function
+                delegate?.menuItemTapped?(itemIndex)
                 
                 // Move controller scroll view when tapping menu item
                 let duration : Double = Double(scrollAnimationDurationOnMenuItemTap) / Double(1000)
